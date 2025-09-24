@@ -1,13 +1,13 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory, render_template
 from flask_cors import CORS
 
-# สร้าง Flask App
-app = Flask(__name__)
+# สร้าง Flask App และระบุโฟลเดอร์
+app = Flask(__name__, static_folder='static', template_folder='templates')
 # อนุญาตให้ Frontend (จากทุก Origin) เรียก API มาได้
 CORS(app)
 
 # --- จำลองฐานข้อมูล ---
-# ย้ายข้อมูลจาก data.js มาเก็บใน Dictionary ของ Python
+# (ส่วนนี้เหมือนเดิม)
 db_users = {
     'user@test.com': {
         'name': 'สมชาย ใจดี',
@@ -23,30 +23,47 @@ db_users = {
         'password': '456',
         'role': 'user',
         'bookings': [
-            { 'id': 'bk1732839555', 'date': '2025-09-20', 'service': 'Shine & Protect', 'vehicle': 'Mazda 2', 'addons': [], 'price': 490, 'status': 'กำลังดำเนินการ' }
-        ]
+            { 'id': 'bk1732839555', 'date': '2025-01-10', 'service': 'Ultimate Gloss', 'vehicle': 'Mercedes-Benz C-Class', 'addons': ['เคลือบกระจก', 'ขัดโคมไฟหน้า'], 'price': 3280, 'status': 'กำลังดำเนินการ' }
+        ],
+        'vehicles': [{'id': 1, 'name': 'Mercedes-Benz C-Class', 'plate': 'กท 9999'}],
+        'points': 480
     },
     'owner@theshinelab.com': { 'name': 'เจ้าของร้าน', 'password': 'admin', 'role': 'owner' }
 }
 
-# --- สร้าง API Endpoints ---
+# --- ROUTES สำหรับแสดงผลหน้าเว็บ (HTML) ---
 
-# API สำหรับ Login
+# เพิ่ม Route นี้เข้าไป
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/dashboard-user.html')
+def dashboard_user():
+    return render_template('dashboard-user.html')
+
+@app.route('/dashboard-owner.html')
+def dashboard_owner():
+    return render_template('dashboard-owner.html')
+
+# --- API ENDPOINTS ---
+# (ส่วน API ทั้งหมดให้คงไว้เหมือนเดิม)
+
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
-    email = data.get('email', '').lower()
+    email = data.get('email').lower()
     password = data.get('password')
-    
     user = db_users.get(email)
-    
+
     if user and user['password'] == password:
-        # สำคัญ: ไม่ส่งรหัสผ่านกลับไป
-        user_info = user.copy()
-        user_info.pop('password', None)
-        return jsonify({'success': True, 'user': user_info})
+        # ไม่ส่งรหัสผ่านกลับไป
+        user_data_to_send = user.copy()
+        user_data_to_send.pop('password')
+        return jsonify({'success': True, 'user': user_data_to_send})
     else:
         return jsonify({'success': False, 'message': 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'}), 401
+# ... (โค้ด API ที่เหลือ) ...
 
 # API สำหรับดึงข้อมูลการจองทั้งหมด (สำหรับ Owner)
 @app.route('/api/bookings', methods=['GET'])
@@ -63,7 +80,25 @@ def get_all_bookings():
                 all_bookings.append(booking_with_context)
     return jsonify(all_bookings)
 
+# API สำหรับดึงข้อมูลเฉพาะของ User ที่ล็อกอิน
+@app.route('/api/user_data', methods=['GET'])
+def get_user_data():
+    # ดึง email ของ user ที่ส่งมาจาก frontend ผ่าน query parameter
+    user_email = request.args.get('email')
+    if not user_email:
+        return jsonify({'success': False, 'message': 'ไม่พบอีเมล'}), 400
 
+    # ค้นหา user ใน db_users
+    user = db_users.get(user_email.lower())
+    
+    if user:
+        # ส่งข้อมูล user กลับไป (ไม่ควรส่งรหัสผ่านไปด้วย)
+        user_data_to_send = user.copy()
+        user_data_to_send.pop('password', None) 
+        return jsonify({'success': True, 'user': user_data_to_send})
+    else:
+        return jsonify({'success': False, 'message': 'ไม่พบข้อมูลผู้ใช้'}), 404
+    
 # API สำหรับสมัครสมาชิกใหม่
 @app.route('/api/register', methods=['POST'])
 def register():

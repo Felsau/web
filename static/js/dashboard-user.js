@@ -100,23 +100,30 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- API CALL & DATA HANDLING ---
     // ฟังก์ชันหลักสำหรับโหลดข้อมูลทั้งหมดของผู้ใช้จากเซิร์ฟเวอร์
+    // --- DATA FETCHING FUNCTIONS ---
     const loadUserData = async () => {
         try {
-            const response = await fetch(`${API_URL}/api/user/data?email=${encodeURIComponent(currentUserEmail)}`);
-            if (!response.ok) throw new Error('ไม่สามารถดึงข้อมูลผู้ใช้ได้');
-            
-            userData = await response.json();
-            
-            // เมื่อได้ข้อมูลแล้ว จึงค่อย Render ส่วนต่างๆ ของหน้าเว็บ
-            renderBookings();
-            renderVehicles();
-            populateProfileForm();
-            setupBookingForm(); // เพื่อให้ dropdown รถยนต์อัปเดต
-            if (loyaltyPointsEl) loyaltyPointsEl.textContent = userData.points || 0;
+            // เรียก API ไปยัง Backend ที่เราสร้างขึ้นใหม่
+            const response = await fetch(`${API_URL}/api/user_data?email=${currentUserEmail}`);
+            const result = await response.json();
 
+            if (response.ok && result.success) {
+                // เมื่อได้รับข้อมูลแล้ว ให้อัปเดตตัวแปร userData
+                userData = result.user;
+                // เรียกฟังก์ชัน render เพื่อแสดงผลข้อมูลลงบนตาราง
+                renderBookings();
+                renderVehicles();
+                // อัปเดตข้อมูลอื่นๆ เช่น แต้มสะสม
+                loyaltyPointsEl.textContent = userData.points || 0;
+            } else {
+                throw new Error(result.message || 'ไม่สามารถโหลดข้อมูลผู้ใช้ได้');
+            }
         } catch (error) {
-            console.error('Error loading user data:', error);
-            showToast('เกิดข้อผิดพลาดในการโหลดข้อมูล', 'error');
+            console.error('Load user data error:', error);
+            showToast(error.message, 'error');
+            // แสดงผลว่าไม่มีข้อมูลหากโหลดไม่สำเร็จ
+            bookingsTbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">เกิดข้อผิดพลาดในการโหลดข้อมูล</td></tr>`;
+            vehiclesTbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">เกิดข้อผิดพลาดในการโหลดข้อมูล</td></tr>`;
         }
     };
 

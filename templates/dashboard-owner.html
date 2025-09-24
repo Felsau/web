@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Admin Dashboard - The Shine Lab</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <style>
         /* CSS เพิ่มเติมสำหรับ Notification */
         .notification {
@@ -130,8 +130,6 @@
     </main>
 
     <div id="notification" class="notification"></div>
-
-    <script src="js/data.js"></script>
-    <script src="js/dashboard-owner.js"></script>
+  <script src="{{ url_for('static', filename='js/dashboard-owner.js') }}"></script>
 </body>
 </html>
