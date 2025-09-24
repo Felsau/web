@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="th">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>The Shine Lab • Premium Car Wash & Detailing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <header>
+        <nav>
+            <a href="#" class="logo">The <strong>Shine</strong> Lab</a>
+            <div id="main-nav">
+                <a href="#services">บริการของเรา</a>
+                <a href="#faq">คำถามที่พบบ่อย</a>
+            </div>
+            <ul id="loggedOutNav">
+                <li><button id="loginNavBtn" class="btn btn-ghost">เข้าสู่ระบบ</button></li>
+                <li><button id="registerNavBtn" class="btn btn-primary">สมัครสมาชิก</button></li>
+            </ul>
+            <ul id="loggedInNav" style="display: none;">
+                <li><span id="userName"></span></li>
+                <li><button id="dashboardNavBtn" class="btn btn-ghost">แดชบอร์ด</button></li>
+                <li><button id="logoutNavBtn" class="btn btn-secondary">ออกจากระบบ</button></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="main-content">
+            <section class="hero">
+                <div class="container">
+                    <h1>สัมผัสความเงางาม<br>เหนือระดับสำหรับรถคุณ</h1>
+                    <p>บริการล้างรถและดูแลรักษาสีรถยนต์ครบวงจรด้วยผลิตภัณฑ์คุณภาพพรีเมียม</p>
+                    <button class="btn btn-primary btn-lg open-booking-redirect">จองคิวออนไลน์เลย</button>
+                </div>
+            </section>
+            <section id="services" class="container section">
+                <h2>บริการของเรา</h2>
+                <div id="services-container" class="services-grid">
+                    </div>
+            </section>
+             <section id="faq" class="container section">
+                <h2>คำถามที่พบบ่อย (FAQ)</h2>
+                <div class="faq-accordion">
+                    </div>
+            </section>
+        </section>
+
+        <section id="loginView" class="page-view" style="display: none;">
+            <div class="auth-container">
+                <h2>เข้าสู่ระบบ</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">อีเมล</label>
+                        <input type="email" id="loginEmail" value="user@test.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">รหัสผ่าน</label>
+                        <input type="password" id="loginPassword" value="123" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">เข้าสู่ระบบ</button>
+                </form>
+                <p class="auth-switch">ยังไม่มีบัญชี? <a href="#" id="goToRegister">สมัครสมาชิกที่นี่</a></p>
+            </div>
+        </section>
+
+        <section id="registerView" class="page-view" style="display: none;">
+             <div class="auth-container">
+                <h2>สมัครสมาชิก</h2>
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="registerName">ชื่อ-นามสกุล</label>
+                        <input type="text" id="registerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail">อีเมล</label>
+                        <input type="email" id="registerEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">รหัสผ่าน</label>
+                        <input type="password" id="registerPassword" required minlength="4">
+                    </div>
+                    <button type="submit" class="btn btn-primary">สมัครสมาชิก</button>
+                </form>
+                <p class="auth-switch">มีบัญชีอยู่แล้ว? <a href="#" id="goToLogin">เข้าสู่ระบบที่นี่</a></p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 The Shine Lab. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="th">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Admin Dashboard - The Shine Lab</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* CSS เพิ่มเติมสำหรับ Notification */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+        .notification.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        .filters input[type="search"], .filters select {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-family: 'Kanit', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">The <strong>Shine</strong> Lab</a>
+            <ul id="loggedInNav" style="display: flex;">
+                <li><a href="index.html" id="homeNavBtn">กลับหน้าหลัก</a></li>
+                <li><span id="userName"></span></li>
+                <li><button id="logoutNavBtn" class="btn btn-secondary">ออกจากระบบ</button></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+       <section class="dashboard-container">
+            <div class="container">
+                <div class="dashboard-header">
+                    <h2 id="dashboard-title">ภาพรวมร้าน</h2>
+                     <div class="dashboard-tabs">
+                        <button class="tab-link active" data-tab="overview-tab">ภาพรวม</button>
+                        <button class="tab-link" data-tab="customers-tab">จัดการลูกค้า</button>
+                    </div>
+                </div>
+
+                <div id="overview-tab" class="tab-content active">
+                    <div class="analytics-cards">
+                        <div class="card">
+                            <h4>รายได้ทั้งหมด</h4>
+                            <p id="total-revenue">0฿</p>
+                        </div>
+                         <div class="card">
+                            <h4>การจองวันนี้</h4>
+                            <p id="today-bookings">0</p>
+                        </div>
+                         <div class="card">
+                            <h4>ลูกค้าทั้งหมด</h4>
+                            <p id="total-customers">0</p>
+                        </div>
+                    </div>
+                    <h3>การจองทั้งหมด</h3>
+                    <div class="filters">
+                        <input type="search" id="booking-search" placeholder="ค้นหาจากชื่อลูกค้า...">
+                        <select id="status-filter">
+                            <option value="all">สถานะทั้งหมด</option>
+                            <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
+                            <option value="เสร็จสิ้น">เสร็จสิ้น</option>
+                            <option value="ยกเลิก">ยกเลิก</option>
+                        </select>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>ลูกค้า</th>
+                                    <th>บริการ</th>
+                                    <th>ราคา</th>
+                                    <th>วันที่</th>
+                                    <th>สถานะ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="all-bookings-tbody">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="customers-tab" class="tab-content">
+                    <h3>รายชื่อลูกค้าในระบบ</h3>
+                    <div class="filters">
+                        <input type="search" id="customer-search" placeholder="ค้นหาจากชื่อหรืออีเมล...">
+                    </div>
+                     <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ชื่อ-นามสกุล</th>
+                                    <th>อีเมล</th>
+                                    <th>จำนวนการจอง</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customers-tbody">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="notification" class="notification"></div>
+
+    <script src="js/data.js"></script>
+    <script src="js/dashboard-owner.js"></script>
+</body>
+</html>

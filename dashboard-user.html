@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard - The Shine Lab</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Custom styles for new features */
+    .toast { visibility: hidden; min-width: 250px; margin-left: -125px; background-color: #333; color: #fff; text-align: center; border-radius: 5px; padding: 16px; position: fixed; z-index: 1000; left: 50%; bottom: 30px; }
+    .toast.show { visibility: visible; -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+    .toast.success { background-color: #28a745; }
+    .toast.error { background-color: #dc3545; }
+    @-webkit-keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+    @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+    @-webkit-keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+    @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+
+    .modal { display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); }
+    .modal-content { background-color: #fefefe; margin: 10% auto; padding: 25px; border: 1px solid #888; width: 80%; max-width: 500px; border-radius: 8px; position: relative; }
+    .close-btn { color: #aaa; float: right; font-size: 28px; font-weight: bold; position: absolute; top: 10px; right: 20px; }
+    .close-btn:hover, .close-btn:focus { color: black; text-decoration: none; cursor: pointer; }
+    .rating .fa-star { font-size: 2rem; color: #ddd; cursor: pointer; }
+    .rating .fa-star.selected, .rating .fa-star:hover { color: #f5b301; }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="index.html" class="logo">The <strong>Shine</strong> Lab</a>
+      <ul id="loggedInNav" style="display: flex;">
+        <li><a href="index.html" id="homeNavBtn">กลับหน้าหลัก</a></li>
+        <li><span id="userName"></span></li>
+        <li><button id="logoutNavBtn" class="btn btn-secondary">ออกจากระบบ</button></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="dashboard-container">
+        <div class="container">
+            <div class="dashboard-header">
+                <h2 id="dashboard-title">ประวัติการจองของคุณ</h2>
+                <div class="dashboard-tabs">
+                    <button class="tab-link active" data-tab="bookings-tab">ประวัติการจอง</button>
+                    <button class="tab-link" data-tab="new-booking-tab">จองคิวใหม่</button>
+                    <button class="tab-link" data-tab="profile-tab">โปรไฟล์ของฉัน</button>
+                </div>
+            </div>
+
+            <div id="bookings-tab" class="tab-content active">
+                <p>นี่คือประวัติการใช้บริการของคุณทั้งหมด</p>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>วันที่</th>
+                                <th>บริการ</th>
+                                <th>ราคา (บาท)</th>
+                                <th>สถานะ</th>
+                                <th>จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-bookings-tbody">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="new-booking-tab" class="tab-content">
+               <p>กรุณากรอกข้อมูลเพื่อทำการจองคิวเข้ารับบริการ</p>
+               <div class="booking-form-container">
+                   <form id="bookingForm">
+                       <div class="form-group">
+                           <label for="bookingService">เลือกแพ็คเกจ</label>
+                           <select id="bookingService" required></select>
+                       </div>
+                       <div class="form-group">
+                           <label for="bookingVehicleType">ประเภทรถ</label>
+                           <select id="bookingVehicleType" required></select>
+                       </div>
+                        <div class="form-group">
+                           <label for="bookingVehicleSelect">เลือกรถของคุณ (ถ้ามี)</label>
+                           <select id="bookingVehicleSelect"></select>
+                       </div>
+                       <div class="form-group form-group-addons">
+                           <label>บริการเสริม (Add-ons)</label>
+                           <div id="bookingAddons" class="addons-container"></div>
+                       </div>
+                       <div class="form-group">
+                           <label for="bookingDate">เลือกวันที่</label>
+                           <input type="date" id="bookingDate" required>
+                       </div>
+                       <div class="form-group">
+                           <label for="bookingTime">เลือกเวลา</label>
+                           <select id="bookingTime" required></select>
+                       </div>
+                       <div class="price-display">
+                           <h3>ราคารวม: <span id="totalPrice">0</span> บาท</h3>
+                       </div>
+                       <button type="submit" class="btn btn-primary">ยืนยันการจอง</button>
+                   </form>
+                </div>
+            </div>
+
+            <div id="profile-tab" class="tab-content">
+                <p>จัดการข้อมูลส่วนตัว, รถของคุณ และคะแนนสะสม</p>
+                <div class="profile-form-container">
+                    <h3>ข้อมูลส่วนตัว</h3>
+                    <div class="loyalty-points">
+                        <i class="fas fa-star"></i> คุณมี <span id="loyaltyPoints">0</span> คะแนนสะสม
+                    </div>
+                    <form id="profileForm">
+                        <div class="form-group">
+                            <label for="profileName">ชื่อ-นามสกุล</label>
+                            <input type="text" id="profileName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profileEmail">อีเมล (ไม่สามารถแก้ไขได้)</label>
+                            <input type="email" id="profileEmail" disabled>
+                        </div>
+                         <div class="form-group">
+                            <label for="profilePassword">รหัสผ่านใหม่</label>
+                            <input type="password" id="profilePassword" placeholder="เว้นว่างไว้หากไม่ต้องการเปลี่ยน">
+                        </div>
+                        <div class="form-group">
+                            <label for="profilePasswordConfirm">ยืนยันรหัสผ่านใหม่</label>
+                            <input type="password" id="profilePasswordConfirm" placeholder="กรอกรหัสผ่านใหม่อีกครั้ง">
+                        </div>
+                        <button type="submit" class="btn btn-primary">บันทึกข้อมูล</button>
+                    </form>
+                </div>
+                <div class="profile-form-container" style="margin-top: 2rem;">
+                    <h3>จัดการข้อมูลรถยนต์</h3>
+                    <div class="table-container">
+                         <table>
+                            <thead>
+                                <tr>
+                                    <th>ยี่ห้อ/รุ่น</th>
+                                    <th>ทะเบียนรถ</th>
+                                    <th>จัดการ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="vehicles-tbody"></tbody>
+                        </table>
+                    </div>
+                    <form id="vehicleForm">
+                        <input type="hidden" id="vehicleId">
+                        <div class="form-group">
+                            <label for="vehicleName">ยี่ห้อ / รุ่นรถ</label>
+                            <input type="text" id="vehicleName" placeholder="เช่น Toyota Camry" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="vehiclePlate">ป้ายทะเบียน</label>
+                            <input type="text" id="vehiclePlate" placeholder="เช่น 1กข 1234" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">เพิ่มรถใหม่</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast"></div>
+
+  <div id="bookingDetailModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" data-modal="bookingDetailModal">&times;</span>
+      <h3 id="modal-title">รายละเอียดการจอง</h3>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <div id="reviewModal" class="modal">
+      <div class="modal-content">
+          <span class="close-btn" data-modal="reviewModal">&times;</span>
+          <h3>ให้คะแนนและรีวิวบริการ</h3>
+          <form id="reviewForm">
+              <input type="hidden" id="reviewBookingId">
+              <div class="form-group rating">
+                  <label>คะแนนของคุณ</label>
+                  <div>
+                    <i class="fas fa-star" data-value="1"></i>
+                    <i class="fas fa-star" data-value="2"></i>
+                    <i class="fas fa-star" data-value="3"></i>
+                    <i class="fas fa-star" data-value="4"></i>
+                    <i class="fas fa-star" data-value="5"></i>
+                  </div>
+                  <input type="hidden" id="reviewRating" required>
+              </div>
+              <div class="form-group">
+                  <label for="reviewComment">ความคิดเห็น</label>
+                  <textarea id="reviewComment" rows="4" placeholder="บอกเล่าประสบการณ์ของคุณ..."></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary">ส่งรีวิว</button>
+          </form>
+      </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/dashboard-user.js"></script>
+</body>
+</html>
